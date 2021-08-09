@@ -3,7 +3,11 @@ package interfaces;
 import java.util.Properties;
 
 import model.Email;
-
+/**
+ * 
+ * @author Majd Rezik
+ *
+ */
 public interface IBridgeEmail {
 	/**
 	 * setAttributes receives email from the employee and saves it in the Bridge Server.

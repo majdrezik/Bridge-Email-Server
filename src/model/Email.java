@@ -1,5 +1,9 @@
 package model;
-
+/**
+ * 
+ * @author Majd Rezik
+ *
+ */
 public class Email {
 	private String toEmail;
 	private String fromEmail;

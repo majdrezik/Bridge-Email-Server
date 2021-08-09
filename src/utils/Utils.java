@@ -1,7 +1,11 @@
 package utils;
 
 import model.Email;
-
+/**
+ * 
+ * @author Majd Rezik
+ *
+ */
 public class Utils {
 
 	static public void print(String str) {

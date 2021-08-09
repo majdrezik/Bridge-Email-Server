@@ -4,7 +4,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
-
+/**
+ * 
+ * @author Majd Rezik
+ *
+ */
 public class MailManager {
 
 	private Properties props;

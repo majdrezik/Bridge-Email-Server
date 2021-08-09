@@ -6,7 +6,11 @@ import java.util.concurrent.Semaphore;
 import interfaces.IBridgeEmail;
 import model.Email;
 import utils.Utils;
-
+/**
+ * 
+ * @author Majd Rezik
+ *
+ */
 public class BridgeEmailServer implements IBridgeEmail {
 
 	private Email email;
@@ -69,6 +73,7 @@ public class BridgeEmailServer implements IBridgeEmail {
 			ex.printStackTrace();
 		}
 	}
+
 
 	@Override
 	public void connect(Properties properties) throws Exception {

@@ -9,7 +9,11 @@ import model.Email;
 import server.BridgeEmailServer;
 import server.MailManager;
 import utils.Utils;
-
+/**
+ * 
+ * @author Majd Rezik
+ *
+ */
 public class MainView implements Runnable {
 	String stars = "******************************************";
 	String showTitle = "		Compose Email";
