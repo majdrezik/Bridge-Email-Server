@@ -7,8 +7,6 @@ import java.util.concurrent.Semaphore;
 
 public class MailManager {
 
-	StringBuilder text = new StringBuilder();
-	StringBuilder text2 = new StringBuilder();
 	private Properties props;
 	
 	public MailManager() {
