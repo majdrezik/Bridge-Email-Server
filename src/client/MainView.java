@@ -92,7 +92,14 @@ public class MainView implements Runnable {
 
 	@Override
 	public void run() {
-		sendEmailThread(emailList.get(index++));
+		try {
+			sem1.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		Email email = emailList.get(index++);
+		sem1.release();
+		sendEmailThread(email);
 	}
 
 	public void illustrateThreads() {
