@@ -16,7 +16,7 @@ import utils.Utils;
  */
 public class MainView implements Runnable {
 	String stars = "******************************************";
-	String showTitle = "		Compose Email";
+	String showTitle = "\t\tCompose Email";
 	String askToEmail = "To: ";
 	String askFromEmail = "From: ";
 	String askBody = "Body: ";
@@ -59,7 +59,7 @@ public class MainView implements Runnable {
 			else if (key.equalsIgnoreCase("To"))
 				askToEmail();
 		}
-		String[] parts = email.split("@");
+		String[] parts = Utils.splitEmail(email);
 		String postfix = parts[1];
 		if (!validVendors.contains(postfix) && key.equalsIgnoreCase("From")) {
 			Utils.println("Unregestered Vendor, try sending by a Valid Vendor <Gmail, Walla, Yahoo>");
@@ -135,9 +135,9 @@ public class MainView implements Runnable {
 	
 	public static void main(String[] args) {
 		MainView main = new MainView();
-		//main.sendEmail(); 			//manual email.
+		main.sendEmail(); 			//manual email.
 		
-		main.illustrateThreads();		// automatic emails.
+		//main.illustrateThreads();		// automatic emails.
 		
 	}
 	

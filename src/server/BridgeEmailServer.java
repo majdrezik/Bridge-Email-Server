@@ -40,7 +40,7 @@ public class BridgeEmailServer implements IBridgeEmail {
 		serverProperties.put("mail.smtp.auth", mail.getAuthentication());// authentication
 		serverProperties.put("mail.smtp.starttls.enable", mail.getEncryption()); // tls encryption
 
-		String[] parts = email.split("@");
+		String[] parts = Utils.splitEmail(email);
 		prefix = parts[0];
 		postfix = parts[1];
 		switch (postfix) {
