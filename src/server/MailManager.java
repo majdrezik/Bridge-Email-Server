@@ -12,8 +12,10 @@ import java.util.concurrent.Semaphore;
 public class MailManager {
 
 	private Properties props;
-	
-	public MailManager() {
+	private static final MailManager manager = new MailManager();
+	//public MailManager() {
+	//make it private: singleton
+	private MailManager() {
 		try {
 			props = new Properties();
 			FileInputStream input = new FileInputStream("src/mail.config");
@@ -26,6 +28,11 @@ public class MailManager {
 		}
 	}
 
+	
+	public static MailManager getInstance() {
+		return manager;
+	}
+	
 ////////////////////////////////////////////////////////
 	public String getGmailHost() {
 		return props.getProperty("Gmail_Host");

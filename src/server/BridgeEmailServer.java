@@ -15,7 +15,8 @@ public class BridgeEmailServer implements IBridgeEmail {
 
 	private Email email;
 	private String postfix, prefix;
-	private MailManager mail = new MailManager();
+	//singleton - Eager initialization
+	private MailManager mail = MailManager.getInstance();
 	Properties serverProperties = new Properties(); // for sending email
 	static Semaphore sem = new Semaphore(1);
 

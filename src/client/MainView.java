@@ -9,6 +9,7 @@ import model.Email;
 import server.BridgeEmailServer;
 import server.MailManager;
 import utils.Utils;
+
 /**
  * 
  * @author Majd Rezik
@@ -30,25 +31,24 @@ public class MainView implements Runnable {
 
 	static int index = 0;
 
-	public void sendEmail() { 
+	public void sendEmail() {
 		validVendors.add("gmail.com");
-		validVendors.add("yahoo.com"); 
+		validVendors.add("yahoo.com");
 		validVendors.add("walla.co.il");
- 
+
 		Utils.println(stars);
-		Utils.println(showTitle); 
+		Utils.println(showTitle);
 		Utils.println(stars);
 		askToEmail();
-		askFromEmail(); 
-		askBody(); 
+		askFromEmail();
+		askBody();
 		try { // the thread of bridgeEmail must wait until this thread finishes.
 			Utils.println("Sending email to Bridge Email Server...");
 			bridgeServer.setAttributes(email);
+		} catch (Exception ex) { // TODO Auto-generated catch block
+			ex.printStackTrace();
 		}
-		catch (Exception ex) { // TODO Auto-generated catch block
-			ex.printStackTrace(); 
-			}
-		} //END sendEmail
+	} // END sendEmail
 
 	private void checkEmail(String email, String key) {
 
@@ -65,7 +65,7 @@ public class MainView implements Runnable {
 			Utils.println("Unregestered Vendor, try sending by a Valid Vendor <Gmail, Walla, Yahoo>");
 			askFromEmail();
 		}
-	} //END checkEmail
+	} // END checkEmail
 
 	// get `From` field and update it in email object.
 	private void askFromEmail() {
@@ -132,13 +132,12 @@ public class MainView implements Runnable {
 		}
 	}
 
-	
 	public static void main(String[] args) {
 		MainView main = new MainView();
-		main.sendEmail(); 			//manual email.
-		
-		//main.illustrateThreads();		// automatic emails.
-		
+		main.sendEmail(); //manual email.
+
+		//main.illustrateThreads(); // automatic emails.
+
 	}
-	
+
 }
