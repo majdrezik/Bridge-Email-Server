@@ -25,39 +25,38 @@ public class MainView implements Runnable {
 //	Email email = new Email();
 	Scanner sc = new Scanner(System.in);
 	BridgeEmailServer bridgeServer = new BridgeEmailServer();
-	static List<Email> emailList = new ArrayList<>();
-	static Semaphore sem1 = new Semaphore(1);
+//	static Semaphore sem1 = new Semaphore(1);
 	static Semaphore sem2 = new Semaphore(1);
 	Boolean isListModified = false;
-	static int index = 0;
-	
+//	static int index = 0;
+
 	public void sendEmail() {
 
 		Email email = new Email();
-		
+
 		try {
 			sem2.acquire();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		if(!isListModified) {
+		if (!isListModified) {
 			validVendors.add("gmail.com");
 			validVendors.add("yahoo.com");
 			validVendors.add("walla.co.il");
 			isListModified = true;
 			sem2.release();
 		}
-		
+
 		Utils.println(stars);
 		Utils.println(showTitle);
 		Utils.println(stars);
 		email = askToEmail(email);
 		email = askFromEmail(email);
 		email = askBody(email);
-		try { 
+		try {
 			Utils.println("Sending email to Bridge Email Server...");
 			bridgeServer.setAttributes(email);
-		} catch (Exception ex) { 
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	} // END sendEmail
@@ -101,7 +100,6 @@ public class MainView implements Runnable {
 		email.setBody(sc.nextLine());
 		return email;
 	}
-
 
 	@Override
 	public void run() {
