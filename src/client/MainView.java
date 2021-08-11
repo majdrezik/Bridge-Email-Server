@@ -22,7 +22,7 @@ public class MainView implements Runnable {
 	String askFromEmail = "From: ";
 	String askBody = "Body: ";
 	List<String> validVendors = new ArrayList<>();
-	Email email = new Email();
+//	Email email = new Email();
 	Scanner sc = new Scanner(System.in);
 	BridgeEmailServer bridgeServer = new BridgeEmailServer();
 	static List<Email> emailList = new ArrayList<>();
@@ -36,12 +36,15 @@ public class MainView implements Runnable {
 		validVendors.add("yahoo.com");
 		validVendors.add("walla.co.il");
 
+//	new code
+		Email email = new Email();
+//		
 		Utils.println(stars);
 		Utils.println(showTitle);
 		Utils.println(stars);
-		askToEmail();
-		askFromEmail();
-		askBody();
+		email = askToEmail(email);
+		email = askFromEmail(email);
+		email = askBody(email);
 		try { // the thread of bridgeEmail must wait until this thread finishes.
 			Utils.println("Sending email to Bridge Email Server...");
 			bridgeServer.setAttributes(email);
@@ -50,40 +53,44 @@ public class MainView implements Runnable {
 		}
 	} // END sendEmail
 
-	private void checkEmail(String email, String key) {
+	private Email checkEmail(Email email, String key) {
 
-		if (!Utils.isValid(email)) {
+		if (!Utils.isValid(key.equalsIgnoreCase("from") ? email.getFromEmail() : email.getToEmail())) {
 			Utils.println("Invalid Email, try again: ");
 			if (key.equalsIgnoreCase("From"))
-				askFromEmail();
+				email = askFromEmail(email);
 			else if (key.equalsIgnoreCase("To"))
-				askToEmail();
+				email = askToEmail(email);
 		}
-		String[] parts = Utils.splitEmail(email);
+		String[] parts = Utils.splitEmail(key.equalsIgnoreCase("from") ? email.getFromEmail() : email.getToEmail());
 		String postfix = parts[1];
 		if (!validVendors.contains(postfix) && key.equalsIgnoreCase("From")) {
 			Utils.println("Unregestered Vendor, try sending by a Valid Vendor <Gmail, Walla, Yahoo>");
-			askFromEmail();
+			email = askFromEmail(email);
 		}
+		return email;
 	} // END checkEmail
 
 	// get `From` field and update it in email object.
-	private void askFromEmail() {
+	private Email askFromEmail(Email email) {
 		Utils.println(askFromEmail);
 		email.setFromEmail(sc.nextLine());
-		checkEmail(email.getFromEmail(), "From");
+		email = checkEmail(email, "From");
+		return email;
 	}
 
 	// get `To` field and update it in email object.
-	private void askToEmail() {
+	private Email askToEmail(Email email) {
 		Utils.println(askToEmail);
 		email.setToEmail(sc.nextLine());
-		checkEmail(email.getToEmail(), "To");
+		email = checkEmail(email, "To");
+		return email;
 	}
 
-	private void askBody() {
+	private Email askBody(Email email) {
 		Utils.println(askBody);
 		email.setBody(sc.nextLine());
+		return email;
 	}
 
 	public void sendEmailThread(Email email) {
@@ -96,16 +103,10 @@ public class MainView implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			sem1.acquire();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		Email email = emailList.get(index++);
-		sem1.release();
-		sendEmailThread(email);
+		this.sendEmail();
 	}
 
+	/*
 	public void illustrateThreads() {
 		String[] toList = new String[10];
 		String[] fromList = new String[10];
@@ -131,13 +132,12 @@ public class MainView implements Runnable {
 			new Thread(new MainView()).start();
 		}
 	}
-
+*/
 	public static void main(String[] args) {
-		MainView main = new MainView();
-		main.sendEmail(); //manual email.
-
+		new Thread(new MainView()).start();
+//		MainView main = new MainView();
+		//main.sendEmail(); //manual email.
 		//main.illustrateThreads(); // automatic emails.
-
 	}
 
 }
