@@ -16,7 +16,7 @@ public class BridgeEmailServer implements IBridgeEmail {
 	private Email email;
 	private String postfix, prefix;
 	//singleton - Eager initialization
-	private MailManager mail = MailManager.getInstance();
+	private MailManager mailManager = MailManager.getInstance();
 	Properties serverProperties = new Properties(); // for sending email
 	static Semaphore sem = new Semaphore(1);
 
@@ -38,29 +38,29 @@ public class BridgeEmailServer implements IBridgeEmail {
 	public void identifyVendor(String email) throws Exception {
 		String username, password;
 
-		serverProperties.put("mail.smtp.auth", mail.getAuthentication());// authentication
-		serverProperties.put("mail.smtp.starttls.enable", mail.getEncryption()); // tls encryption
+		serverProperties.put("mail.smtp.auth", mailManager.getAuthentication());// authentication
+		serverProperties.put("mail.smtp.starttls.enable", mailManager.getEncryption()); // tls encryption
 
 		String[] parts = Utils.splitEmail(email);
 		prefix = parts[0];
 		postfix = parts[1];
 		switch (postfix) {
 		case "gmail.com":
-			serverProperties.put("mail.smtp.host", mail.getGmailHost()); // host: Gmail
-			username = mail.getGmailUsername();
-			password = mail.getGmailPassword();
+			serverProperties.put("mail.smtp.host", mailManager.getGmailHost()); // host: Gmail
+			username = mailManager.getGmailUsername();
+			password = mailManager.getGmailPassword();
 			this.email.setVendorName("Gmail");
 			break;
 		case "walla.co.il":
-			serverProperties.put("mail.smtp.host", mail.getWallaHost()); // host: Gmail
-			username = mail.getWallaUsername();
-			password = mail.getWallaPassword();
+			serverProperties.put("mail.smtp.host", mailManager.getWallaHost()); // host: Gmail
+			username = mailManager.getWallaUsername();
+			password = mailManager.getWallaPassword();
 			this.email.setVendorName("Walla");
 			break;
 		case "yahoo.com":
-			serverProperties.put("mail.smtp.host", mail.getYahooHost()); // host: Gmail
-			username = mail.getYahooUsername();
-			password = mail.getYahooPassword();
+			serverProperties.put("mail.smtp.host", mailManager.getYahooHost()); // host: Gmail
+			username = mailManager.getYahooUsername();
+			password = mailManager.getYahooPassword();
 			this.email.setVendorName("Yahoo");
 			break;
 
