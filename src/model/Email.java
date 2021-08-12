@@ -4,6 +4,10 @@ package model;
  * @author Majd Rezik
  *
  */
+
+/**
+ * POJO
+ */
 public class Email {
 	private String toEmail;
 	private String fromEmail;
@@ -15,17 +19,14 @@ public class Email {
 		return vendorName;
 	}
 
-
 	public void setVendorName(String vendorName) {
 		this.vendorName = vendorName;
 	}
 
-
 	public Email() {
-		
+
 	}
-	
-	
+
 	public Email(String toEmail, String fromEmail, String vendorPostfix, String body) {
 		this.toEmail = toEmail;
 		this.fromEmail = fromEmail;

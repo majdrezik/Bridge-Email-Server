@@ -22,14 +22,16 @@ public interface IBridgeEmail {
 	 * And tries to connect to the appropriate server.
 	 * @param email
 	 * @throws Exception
+	 * @return void
 	 */
-	public void identifyVendor(String email) throws Exception;
+	public void identifyVendor(Email email) throws Exception;
 	
 	/**
 	 * connect imitates connecting to the server by sleeping 2 seconds.
 	 * And calls sendEmail to send the email after connecting to the server.
 	 * @param properties
 	 * @throws Exception
+	 * @return void
 	 */
 	public void connect(Properties properties) throws Exception;
 	
@@ -39,4 +41,5 @@ public interface IBridgeEmail {
 	 * @throws Exception
 	 */
 	public void sendEmail(Email email) throws Exception;
+
 }

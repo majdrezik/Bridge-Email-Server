@@ -2,12 +2,12 @@ package client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
 import model.Email;
 import server.BridgeEmailServer;
-import server.MailManager;
 import utils.Utils;
 
 /**
@@ -16,89 +16,122 @@ import utils.Utils;
  *
  */
 public class MainView implements Runnable {
-	String stars = "******************************************";
-	String showTitle = "\t\tCompose Email";
-	String askToEmail = "To: ";
-	String askFromEmail = "From: ";
-	String askBody = "Body: ";
-	static List<String> validVendors = new ArrayList<>();
-//	Email email = new Email();
-	Scanner sc = new Scanner(System.in);
-	BridgeEmailServer bridgeServer = new BridgeEmailServer();
-//	static Semaphore sem1 = new Semaphore(1);
-	static Semaphore sem2 = new Semaphore(1);
-	Boolean isListModified = false;
-//	static int index = 0;
+	private static final String stars = "******************************************";
+	private static final String showTitle = "\t\tCompose Email";
+	private static final String askToEmail = "To: ";
+	private static final String askFromEmail = "From: ";
+	private static final String askBody = "Body: ";
+	private static List<String> validVendors = new ArrayList<>();
+	private Scanner sc = new Scanner(System.in);
+	private BridgeEmailServer bridgeServer = BridgeEmailServer.getInstance();
 
+	static Semaphore sem = new Semaphore(1);
+
+	/**
+	 * MainView adds 3 registered vendors to a list for a later use.
+	 */
+	public MainView() {
+		validVendors.add("gmail.com");
+		validVendors.add("yahoo.com");
+		validVendors.add("walla.co.il");
+	}
+
+	
+	/**
+	 * sendEmail asks the user to insert email information including "to", "from" and "email body"
+	 * and tries to send the email to Email Bridge Server - tries again in case of a failure.
+	 */
 	public void sendEmail() {
 
 		Email email = new Email();
 
-		try {
-			sem2.acquire();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		if (!isListModified) {
-			validVendors.add("gmail.com");
-			validVendors.add("yahoo.com");
-			validVendors.add("walla.co.il");
-			isListModified = true;
-			sem2.release();
-		}
-
 		Utils.println(stars);
 		Utils.println(showTitle);
 		Utils.println(stars);
-		email = askToEmail(email);
-		email = askFromEmail(email);
-		email = askBody(email);
-		try {
-			Utils.println("Sending email to Bridge Email Server...");
-			bridgeServer.setAttributes(email);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		askToEmail(email);
+		askFromEmail(email);
+		askBody(email);
+
+		int retries = 0;
+		boolean catchSendingToServerException = false;
+		do {
+			try {
+				Utils.println("Sending email to Bridge Email Server...");
+				bridgeServer.setAttributes(email);
+				catchSendingToServerException = false;
+			} catch (Exception ex) {
+				catchSendingToServerException = true;
+				if (retries++ > 2) {
+					Utils.println("FATAL - Cant send email, try again later.");
+					ex.printStackTrace();
+				}
+			}
+		} while (catchSendingToServerException);
 	} // END sendEmail
 
-	private Email checkEmail(Email email, String key) {
-
-		if (!Utils.isValid(key.equalsIgnoreCase("from") ? email.getFromEmail() : email.getToEmail())) {
-			Utils.println("Invalid Email, try again: ");
-			if (key.equalsIgnoreCase("From"))
-				email = askFromEmail(email);
-			else if (key.equalsIgnoreCase("To"))
-				email = askToEmail(email);
-		}
-		String[] parts = Utils.splitEmail(key.equalsIgnoreCase("from") ? email.getFromEmail() : email.getToEmail());
-		String postfix = parts[1];
-		if (!validVendors.contains(postfix) && key.equalsIgnoreCase("From")) {
-			Utils.println("Unregestered Vendor, try sending by a Valid Vendor <Gmail, Walla, Yahoo>");
-			email = askFromEmail(email);
-		}
-		return email;
-	} // END checkEmail
-
-	// get `From` field and update it in email object.
-	private Email askFromEmail(Email email) {
-		Utils.println(askFromEmail);
-		email.setFromEmail(sc.nextLine());
-		email = checkEmail(email, "From");
-		return email;
+	/**
+	 * updates the vendor's postfix in the email object - using Utils method getEmailPostfix.
+	 * @param email
+	 */
+	private void writePostfix(Email email) {
+		email.setVendorPostfix(Utils.getEmailPostfix(email.getFromEmail()));
 	}
 
-	// get `To` field and update it in email object.
-	private Email askToEmail(Email email) {
-		Utils.println(askToEmail);
-		email.setToEmail(sc.nextLine());
-		email = checkEmail(email, "To");
-		return email;
+	/**
+	 * checkEmail uses the regex in Utils and checks whether the inserted email is legal or not; returns true and false respectively.
+	 * @param email: String
+	 * @return boolean
+	 */
+	private boolean checkEmail(String email) {
+		return Utils.isValid(email) ? true : false;
 	}
 
-	private Email askBody(Email email) {
+	/**
+	 * askFromEmail asks the user to insert the email to send from.
+	 * @param email
+	 */
+	private void askFromEmail(Email email) {
+		do {
+			Utils.println(askFromEmail);
+			email.setFromEmail(sc.nextLine());
+		} while (!checkEmail(email.getFromEmail()));
+		if (!canSendEmail(email)) {
+			askFromEmail(email);
+		}
+	}
+
+	/**
+	 * canSendEmail checks whether the Employee can send the email via the registered vendors.
+	 * @param email
+	 * @return
+	 */
+	private boolean canSendEmail(Email email) {
+		writePostfix(email);
+		if (validVendors.contains(email.getVendorPostfix()))
+			return true;
+		Utils.println("Unregestered Vendor, try sending by a Valid Vendor <Gmail, Walla, Yahoo>");
+		return false;
+	}
+
+	/**
+	 * askToEmail asks the user to insert the recipient's email.
+	 * @param email
+	 */
+	private void askToEmail(Email email) {
+		do {
+			Utils.println(askToEmail);
+			email.setToEmail(sc.nextLine());
+		} while (!checkEmail(email.getToEmail()));
+	}
+
+	/**
+	 * askBody asks the user to write the email body.
+	 * @param email
+	 * @return
+	 */
+	private void askBody(Email email) {
 		Utils.println(askBody);
 		email.setBody(sc.nextLine());
-		return email;
 	}
 
 	@Override
@@ -107,7 +140,11 @@ public class MainView implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		new Thread(new MainView()).start();
+		String[] strArr = { "P", "Q", "R", "S", "T", "U", "V", "W" };
+		Random rand = new Random();
+		int res = rand.nextInt(strArr.length);
+		//For each Employee dedicate a new ClientUI
+		new Thread(new MainView(), "Thread-" + strArr[res]).start();
 	}
 
 }
